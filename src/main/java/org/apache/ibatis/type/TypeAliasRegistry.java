@@ -141,6 +141,7 @@ public class TypeAliasRegistry {
   public void registerAlias(Class<?> type) {
     String alias = type.getSimpleName();
     Alias aliasAnnotation = type.getAnnotation(Alias.class);
+    // 从注解中取出别名
     if (aliasAnnotation != null) {
       alias = aliasAnnotation.value();
     }
@@ -153,6 +154,10 @@ public class TypeAliasRegistry {
     }
     // issue #748
     String key = alias.toLowerCase(Locale.ENGLISH);
+    /*
+     * 如果 TYPE_ALIASES 中存在了某个类型映射，这里判断当前类型与映射中的类型是否一致，
+     * 不一致则抛出异常，不允许一个别名对应两种类型
+     */
     if (typeAliases.containsKey(key) && typeAliases.get(key) != null && !typeAliases.get(key).equals(value)) {
       throw new TypeException("The alias '" + alias + "' is already mapped to the value '" + typeAliases.get(key).getName() + "'.");
     }

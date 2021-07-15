@@ -123,6 +123,11 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * settings 相关配置是 MyBatis 中非常重要的配置，这些配置用于调整 MyBatis 运行时的行为
+   * @param context
+   * @return
+   */
   private Properties settingsAsProperties(XNode context) {
     if (context == null) {
       return new Properties();
@@ -164,6 +169,7 @@ public class XMLConfigBuilder extends BaseBuilder {
           String typeAliasPackage = child.getStringAttribute("name");
           configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
         } else {
+//          从 typeAlias 节点中解析别名和类型的映射
           String alias = child.getStringAttribute("alias");
           String type = child.getStringAttribute("type");
           try {
@@ -226,6 +232,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void propertiesElement(XNode context) throws Exception {
     if (context != null) {
+//      // 解析 propertis 的子节点，并将这些节点内容转换为属性对象 Properties
       Properties defaults = context.getChildrenAsProperties();
       String resource = context.getStringAttribute("resource");
       String url = context.getStringAttribute("url");
@@ -233,10 +240,13 @@ public class XMLConfigBuilder extends BaseBuilder {
         throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
       }
       if (resource != null) {
+//          // 从文件系统中加载并解析属性文件
         defaults.putAll(Resources.getResourceAsProperties(resource));
       } else if (url != null) {
+//         通过 url 加载并解析属性文件
         defaults.putAll(Resources.getUrlAsProperties(url));
       }
+//      也就是从文件系统，或者网络上读取到的属性及属性值会覆盖掉 properties 子节点中同名的属性和及值。
       Properties vars = configuration.getVariables();
       if (vars != null) {
         defaults.putAll(vars);
@@ -280,10 +290,15 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void environmentsElement(XNode context) throws Exception {
     if (context != null) {
       if (environment == null) {
+        // 获取 default 属性
         environment = context.getStringAttribute("default");
       }
       for (XNode child : context.getChildren()) {
+//        // 获取 id 属性
         String id = child.getStringAttribute("id");
+//         * 检测当前 environment 节点的 id 与其父节点 environments 的属性 default
+//             * 内容是否一致，一致则返回 true，否则返回 false
+//            */
         if (isSpecifiedEnvironment(id)) {
           TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));

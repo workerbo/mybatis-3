@@ -30,6 +30,8 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ *
+ * 参考：https://www.tianxiaobo.com/2018/07/20/MyBatis-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B/
  */
 public abstract class BaseBuilder {
   protected final Configuration configuration;

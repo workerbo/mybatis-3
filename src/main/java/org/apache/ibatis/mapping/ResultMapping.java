@@ -170,6 +170,7 @@ public class ResultMapping {
     }
 
     private void resolveTypeHandler() {
+//      给每一个属性绑定TypeHandler
       if (resultMapping.typeHandler == null && resultMapping.javaType != null) {
         Configuration configuration = resultMapping.configuration;
         TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();

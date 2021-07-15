@@ -27,11 +27,13 @@ import org.apache.ibatis.reflection.invoker.MethodInvoker;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
+ * 提供类的元信息
  * @author Clinton Begin
  */
 public class MetaClass {
-
+//  Reflector 的工厂类，兼有缓存 Reflector 对象的功能
   private final ReflectorFactory reflectorFactory;
+//  用于解析和存储目标类中的元信息
   private final Reflector reflector;
 
   private MetaClass(Class<?> type, ReflectorFactory reflectorFactory) {
@@ -133,9 +135,12 @@ public class MetaClass {
   }
 
   public boolean hasSetter(String name) {
+    // 属性分词器，用于解析属性名
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
+      // hasNext 返回 true，则表明 name 是一个复合属性，后面会进行分析
       if (reflector.hasSetter(prop.getName())) {
+        // 为属性创建创建 MetaClass
         MetaClass metaProp = metaClassForProperty(prop.getName());
         return metaProp.hasSetter(prop.getChildren());
       } else {

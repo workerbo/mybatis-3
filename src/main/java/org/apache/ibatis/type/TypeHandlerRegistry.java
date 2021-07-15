@@ -349,6 +349,7 @@ public final class TypeHandlerRegistry {
       try {
         TypeReference<T> typeReference = (TypeReference<T>) typeHandler;
         register(typeReference.getRawType(), typeHandler);
+//        上面的getRawType()，就是泛型参数Type类型。Mybatis在启动初始化过程中，会将用户自定义的<typeHandlers>标签内的所有TypeHandler，注册至Configuration内。
         mappedTypeFound = true;
       } catch (Throwable t) {
         // maybe users define the TypeReference with a different type and are not assignable, so just ignore it

@@ -18,6 +18,7 @@ package org.apache.ibatis.reflection;
 import static com.googlecode.catchexception.apis.BDDCatchException.*;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -171,6 +172,9 @@ class ReflectorTest {
   }
 
   static class Child extends Parent<String> {
+    public String getId() {
+      return id;
+    }
   }
 
   @Test
