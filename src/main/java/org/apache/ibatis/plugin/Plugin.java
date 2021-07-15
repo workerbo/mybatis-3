@@ -27,12 +27,24 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.util.MapUtil;
 
 /**
+ * 代理对象生成器
  * @author Clinton Begin
  */
 public class Plugin implements InvocationHandler {
-
+  /**
+   * 目标对象
+   */
   private final Object target;
+  /**
+   * 拦截器
+   */
   private final Interceptor interceptor;
+  /**
+   * 拦截的方法映射
+   *
+   * KEY：类
+   * VALUE：方法集合
+   */
   private final Map<Class<?>, Set<Method>> signatureMap;
 
   private Plugin(Object target, Interceptor interceptor, Map<Class<?>, Set<Method>> signatureMap) {
@@ -44,17 +56,23 @@ public class Plugin implements InvocationHandler {
   public static Object wrap(Object target, Interceptor interceptor) {
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
+    //  获得目标类的接口集合
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
+//    若有接口，则创建目标对象的 JDK Proxy 对象
     if (interfaces.length > 0) {
       return Proxy.newProxyInstance(
           type.getClassLoader(),
           interfaces,
           new Plugin(target, interceptor, signatureMap));
     }
+//    如果没有，则返回原始的目标对象
     return target;
   }
 
   @Override
+  /**
+   * 名义上的横切逻辑
+   */
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
@@ -89,7 +107,9 @@ public class Plugin implements InvocationHandler {
 
   private static Class<?>[] getAllInterfaces(Class<?> type, Map<Class<?>, Set<Method>> signatureMap) {
     Set<Class<?>> interfaces = new HashSet<>();
+//    // 循环递归 type 类，及其父类
     while (type != null) {
+      // 遍历接口集合，若在 signatureMap 中，则添加到 interfaces 中
       for (Class<?> c : type.getInterfaces()) {
         if (signatureMap.containsKey(c)) {
           interfaces.add(c);

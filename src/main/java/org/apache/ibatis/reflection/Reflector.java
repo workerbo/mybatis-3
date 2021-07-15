@@ -274,7 +274,7 @@ public class Reflector {
    * @return An array containing all methods in this class
    */
   private Method[] getClassMethods(Class<?> clazz) {
-    Map<String, Method> uniqueMethods = new HashMap<>();
+    Map<String, Method> uniqueMethods = new HashMap<>();  //以方法签名作为key
     Class<?> currentClass = clazz;
     while (currentClass != null && currentClass != Object.class) {
       addUniqueMethods(uniqueMethods, currentClass.getDeclaredMethods());

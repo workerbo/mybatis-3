@@ -20,13 +20,21 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * 应用拦截器
+ * MyBatis 的插件，还是基于动态代理
  * @author Clinton Begin
  */
 public class InterceptorChain {
 
   private final List<Interceptor> interceptors = new ArrayList<>();
 
+  /**
+   * 应用所有拦截器到指定目标对象
+   * @param target
+   * @return
+   */
   public Object pluginAll(Object target) {
+//    责任链模式
     for (Interceptor interceptor : interceptors) {
       target = interceptor.plugin(target);
     }

@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 public @interface Signature {
   /**
    * Returns the java type.
-   *
+   *@Signature 注解的 type 属性，必须是接口。
    * @return the java type
    */
   Class<?> type();

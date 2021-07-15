@@ -18,12 +18,23 @@ package org.apache.ibatis.plugin;
 import java.util.Properties;
 
 /**
+ * 拦截信息和实际横切逻辑
  * @author Clinton Begin
  */
 public interface Interceptor {
-
+  /**
+   * 实际横切逻辑所在
+   * @param invocation
+   * @return
+   * @throws Throwable
+   */
   Object intercept(Invocation invocation) throws Throwable;
 
+  /**
+   * 名义上的代理工厂方法   * 应用插件。如应用成功，则会创建目标对象的代理对象
+   * @param target
+   * @return
+   */
   default Object plugin(Object target) {
     return Plugin.wrap(target, this);
   }

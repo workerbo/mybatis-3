@@ -30,7 +30,7 @@ public class RichType {
 
   private Map richMap = new HashMap();
 
-  private List richList = new ArrayList() {
+  private List<String> richList = new ArrayList() {
     {
       add("bar");
     }
@@ -50,14 +50,6 @@ public class RichType {
 
   public void setRichProperty(String richProperty) {
     this.richProperty = richProperty;
-  }
-
-  public List getRichList() {
-    return richList;
-  }
-
-  public void setRichList(List richList) {
-    this.richList = richList;
   }
 
   public Map getRichMap() {

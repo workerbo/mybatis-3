@@ -143,6 +143,7 @@ class TypeParameterResolverTest {
     assertEquals(Calculator.class, paramType.getRawType());
     assertEquals(1, paramType.getActualTypeArguments().length);
     assertTrue(paramType.getActualTypeArguments()[0] instanceof WildcardType);
+
   }
 
   @Test
@@ -178,6 +179,39 @@ class TypeParameterResolverTest {
     assertEquals(Calculator.class, paramTypeInner.getRawType());
     assertEquals(Date.class, paramTypeInner.getActualTypeArguments()[0]);
   }
+  @Test
+  void testSituation1() throws NoSuchMethodException {
+    Class<?> clazz = Level0Mapper.class;
+    Method method = clazz.getMethod("selectCalculatorList");
+    Type result = TypeParameterResolver.resolveReturnType(method, clazz);
+    ParameterizedType paramTypeOuter = (ParameterizedType) result;
+    ParameterizedType paramTypeInner = (ParameterizedType) paramTypeOuter.getActualTypeArguments()[0];
+    System.out.println(paramTypeInner.getActualTypeArguments()[0]);
+  }
+
+  /**
+   * 测试情况2
+   * @throws NoSuchMethodException
+   */
+  @Test
+  void testSituation2() throws NoSuchMethodException {
+    Class<?> clazz = Level1Mapper.class;
+    Method method = clazz.getMethod("selectCalculatorList");
+    Type result = TypeParameterResolver.resolveReturnType(method, clazz);
+    ParameterizedType paramTypeOuter = (ParameterizedType) result;
+    ParameterizedType paramTypeInner = (ParameterizedType) paramTypeOuter.getActualTypeArguments()[0];
+    System.out.println(paramTypeInner.getActualTypeArguments()[0]);
+  }
+
+  @Test
+  void paramNameUtil() throws NoSuchMethodException {
+    Class<?> clazz = Level0Mapper.class;
+    Method method = clazz.getMethod("aaa",String.class,Double.class);
+    ;
+
+    System.out.println(ParamNameUtil.getParamNames(method));
+  }
+
 
   @Test
   void testReturn_Lv0InnerClass() throws Exception {

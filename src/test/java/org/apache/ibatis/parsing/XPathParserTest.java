@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,7 +44,12 @@ class XPathParserTest {
       testEvalMethod(parser);
     }
   }
-
+  @Test
+  void  aa(){
+    int[] a=new int[]{9,8};
+    Arrays.stream(a).forEach(x-> {System.out.println(x);throw new RuntimeException();});
+    System.out.println("oooooooo");
+  }
   @Test
   void constructorWithInputStreamValidationVariables() throws IOException {
     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
