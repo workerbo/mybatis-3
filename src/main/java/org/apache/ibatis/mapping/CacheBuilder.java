@@ -90,9 +90,12 @@ public class CacheBuilder {
   }
 
   public Cache build() {
+    // 设置默认的缓存类型（PerpetualCache）和缓存装饰器（LruCache）
     setDefaultImplementations();
+    // 通过反射创建缓存
     Cache cache = newBaseCacheInstance(implementation, id);
     setCacheProperties(cache);
+    // 仅对内置缓存 PerpetualCache 应用装饰器
     // issue #352, do not apply decorators to custom caches
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
@@ -122,15 +125,22 @@ public class CacheBuilder {
         metaCache.setValue("size", size);
       }
       if (clearInterval != null) {
+        // clearInterval 不为空，应用 ScheduledCache 装饰器
         cache = new ScheduledCache(cache);
         ((ScheduledCache) cache).setClearInterval(clearInterval);
       }
       if (readWrite) {
+        // readWrite 为 true，应用 SerializedCache 装饰器
         cache = new SerializedCache(cache);
       }
+      /*
+       * 应用 LoggingCache，SynchronizedCache 装饰器，
+       * 使原缓存具备打印日志和线程同步的能力
+       */
       cache = new LoggingCache(cache);
       cache = new SynchronizedCache(cache);
       if (blocking) {
+        // blocking 为 true，应用 BlockingCache 装饰器
         cache = new BlockingCache(cache);
       }
       return cache;
@@ -139,13 +149,26 @@ public class CacheBuilder {
     }
   }
 
+  /**
+   * 对属性值进行类型转换，和设置转换后的值到 Cache 实例中
+   * @param cache
+   */
   private void setCacheProperties(Cache cache) {
     if (properties != null) {
+      /*
+       * 为缓存实例生成一个“元信息”实例，forObject 方法调用层次比较深，但最终调用了
+       * MetaClass 的 forClass 方法。关于 MetaClass 的源码，我在上一篇文章中已经
+       * 详细分析过了，这里不再赘述。
+       */
       MetaObject metaCache = SystemMetaObject.forObject(cache);
       for (Map.Entry<Object, Object> entry : properties.entrySet()) {
         String name = (String) entry.getKey();
         String value = (String) entry.getValue();
         if (metaCache.hasSetter(name)) {
+          /*
+           * 根据参数类型对属性值进行转换，并将转换后的值
+           * 通过 setter 方法设置到 Cache 实例中
+           */
           Class<?> type = metaCache.getSetterType(name);
           if (String.class == type) {
             metaCache.setValue(name, value);
@@ -176,6 +199,7 @@ public class CacheBuilder {
         }
       }
     }
+    // 如果缓存类实现了 InitializingObject 接口，则调用 initialize 方法执行初始化逻辑
     if (InitializingObject.class.isAssignableFrom(cache.getClass())) {
       try {
         ((InitializingObject) cache).initialize();

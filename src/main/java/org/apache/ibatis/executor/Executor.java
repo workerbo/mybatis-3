@@ -28,6 +28,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
+ *  DefaultSqlSessionFactory 的 openSession 方法，很快就能发现executor 变量创建的踪迹
  * @author Clinton Begin
  */
 public interface Executor {

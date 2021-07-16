@@ -89,6 +89,7 @@
     select * from Post where blog_id = #{blog_id}
   </select>
 
+
   <select id="selectBlogByIdUsingConstructor" parameterType="int" resultMap="blogUsingConstructor">
     select * from Blog where id = #{id}
   </select>

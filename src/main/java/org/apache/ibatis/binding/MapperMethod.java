@@ -56,6 +56,12 @@ public class MapperMethod {
     this.method = new MethodSignature(config, mapperInterface, method);
   }
 
+  /**
+   * Mapper代理对象最终执行  通过Sqlsession调用。  结果转化
+   * @param sqlSession
+   * @param args
+   * @return
+   */
   public Object execute(SqlSession sqlSession, Object[] args) {
     Object result;
     // 根据 SQL 类型执行相应的数据库操作

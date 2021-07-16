@@ -322,11 +322,14 @@ public class XMLConfigBuilder extends BaseBuilder {
         type = "DB_VENDOR";
       }
       Properties properties = context.getChildrenAsProperties();
+      // 找到 type 配置对应的类
       databaseIdProvider = (DatabaseIdProvider) resolveClass(type).getDeclaredConstructor().newInstance();
       databaseIdProvider.setProperties(properties);
     }
     Environment environment = configuration.getEnvironment();
     if (environment != null && databaseIdProvider != null) {
+      // 通过数据源确定使用的 databaseId ，之后 SQL 也只会加载这种 databaseId 的 SQL ，其他类型都会被忽略
+
       String databaseId = databaseIdProvider.getDatabaseId(environment.getDataSource());
       configuration.setDatabaseId(databaseId);
     }
@@ -385,12 +388,16 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
         if ("package".equals(child.getName())) {
+          // 获取 <package> 节点中的 name 属性
           String mapperPackage = child.getStringAttribute("name");
+          // 从指定包中查找 mapper 接口，并根据 mapper 接口解析映射配置
           configuration.addMappers(mapperPackage);
         } else {
+          // 获取 resource/url/class 等属性
           String resource = child.getStringAttribute("resource");
           String url = child.getStringAttribute("url");
           String mapperClass = child.getStringAttribute("class");
+          // resource 不为空，且其他两者为空，则从指定路径中加载配置
           if (resource != null && url == null && mapperClass == null) {
             ErrorContext.instance().resource(resource);
             try(InputStream inputStream = Resources.getResourceAsStream(resource)) {
@@ -404,6 +411,7 @@ public class XMLConfigBuilder extends BaseBuilder {
               mapperParser.parse();
             }
           } else if (resource == null && url == null && mapperClass != null) {
+//            第三种是通过 mapper 接口加载映射信息
             Class<?> mapperInterface = Resources.classForName(mapperClass);
             configuration.addMapper(mapperInterface);
           } else {
