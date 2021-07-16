@@ -165,7 +165,7 @@ class MetaClassTest {
     // 为 Author 创建元信息对象
     MetaClass authorMeta = MetaClass.forClass(Author.class, new DefaultReflectorFactory());
     System.out.println("------------☆ Author ☆------------");
-    System.out.println("id -> " + authorMeta.hasSetter("id"));
+    System.out.println("id -> " + authorMeta.hasSetter("id[]"));
     System.out.println("name -> " + authorMeta.hasSetter("name"));
     System.out.println("age -> " + authorMeta.hasSetter("age"));
     // 检测 Author 中是否包含 Article[] 的 setter

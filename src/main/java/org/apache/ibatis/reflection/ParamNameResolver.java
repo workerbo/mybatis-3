@@ -56,12 +56,15 @@ public class ParamNameResolver {
 
   public ParamNameResolver(Configuration config, Method method) {
     this.useActualParamName = config.isUseActualParamName();
+    // 获取参数类型列表
     final Class<?>[] paramTypes = method.getParameterTypes();
+    // 获取参数注解
     final Annotation[][] paramAnnotations = method.getParameterAnnotations();
     final SortedMap<Integer, String> map = new TreeMap<>();
     int paramCount = paramAnnotations.length;
     // get names from @Param annotations
     for (int paramIndex = 0; paramIndex < paramCount; paramIndex++) {
+      // 检测当前的参数类型是否为 RowBounds 或 ResultHandler
       if (isSpecialParameter(paramTypes[paramIndex])) {
         // skip special parameters
         continue;
@@ -70,13 +73,20 @@ public class ParamNameResolver {
       for (Annotation annotation : paramAnnotations[paramIndex]) {
         if (annotation instanceof Param) {
           hasParamAnnotation = true;
+          // 获取 @Param 注解内容
           name = ((Param) annotation).value();
           break;
         }
       }
+      // name 为空，表明未给参数配置 @Param 注解
       if (name == null) {
         // @Param was not specified.
         if (useActualParamName) {
+          /*
+           * 通过反射获取参数名称。此种方式要求 JDK 版本为 1.8+，
+           * 且要求编译时加入 -parameters 参数，否则获取到的参数名
+           * 仍然是 arg1, arg2, ..., argN
+           */
           name = getActualParamName(method, paramIndex);
         }
         if (name == null) {
@@ -85,6 +95,7 @@ public class ParamNameResolver {
           name = String.valueOf(map.size());
         }
       }
+      // 存储 paramIndex 到 name 的映射
       map.put(paramIndex, name);
     }
     names = Collections.unmodifiableSortedMap(map);
@@ -124,12 +135,21 @@ public class ParamNameResolver {
     if (args == null || paramCount == 0) {
       return null;
     } else if (!hasParamAnnotation && paramCount == 1) {
+      /*
+       * 如果方法参数列表无 @Param 注解，且仅有一个非特别参数，则返回该参数的值。
+       * 比如如下方法：
+       *     List findList(RowBounds rb, String name)
+       * names 如下：
+       *     names = {1 : "0"}
+       * 此种情况下，返回 args[names.firstKey()]，即 args[1] -> name
+       */
       Object value = args[names.firstKey()];
       return wrapToMapIfCollection(value, useActualParamName ? names.get(0) : null);
     } else {
       final Map<String, Object> param = new ParamMap<>();
       int i = 0;
       for (Map.Entry<Integer, String> entry : names.entrySet()) {
+        // 添加 <参数名, 参数值> 键值对到 param 中
         param.put(entry.getValue(), args[entry.getKey()]);
         // add generic param names (param1, param2, ...)
         final String genericParamName = GENERIC_NAME_PREFIX + (i + 1);
