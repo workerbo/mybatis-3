@@ -57,6 +57,9 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private final XPathParser parser;
   private final MapperBuilderAssistant builderAssistant;
+  /**
+   * 存储<sql></>节点
+   */
   private final Map<String, XNode> sqlFragments;
   private final String resource;
 
@@ -136,6 +139,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void buildStatementFromContext(List<XNode> list) {
     if (configuration.getDatabaseId() != null) {
+      // 调用重载方法构建 Statement
       buildStatementFromContext(list, configuration.getDatabaseId());
     }
     buildStatementFromContext(list, null);
@@ -143,10 +147,16 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
     for (XNode context : list) {
+      // 创建 Statement 建造类
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
+        /*
+         * 解析 Statement 节点，并将解析结果存储到
+         * configuration 的 mappedStatements 集合中
+         */
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
+        // 解析失败，将解析器放入 configuration 的 incompleteStatements 集合中
         configuration.addIncompleteStatement(statementParser);
       }
     }
